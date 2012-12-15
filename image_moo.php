@@ -60,7 +60,7 @@
  * TO DO
  *
  * THANKS
- * Matja� for poiting out the save_pa bug (should of tested it!)
+ * Matjaž for poiting out the save_pa bug (should of tested it!)
  * Cahva for posting yet another bug in the save_pa (Man I can be silly sometimes!)
  * Cole spotting the resize flaw and providing a fix
  *
@@ -90,7 +90,7 @@ class Image_moo
 	public $width=0;
 	public $height=0;
 
-	function Image_moo()
+	public function __construct()
 	//----------------------------------------------------------------------------------------------------------
 	// create stuff here as needed
 	//----------------------------------------------------------------------------------------------------------
@@ -498,6 +498,33 @@ class Image_moo
 		// copy section
 		imagecopyresampled($this->temp_image, $this->main_image, 0, 0, $sx, $sy, $mw, $mh, $sx2, $sy2);
 		return $this;
+	}
+
+	public function auto_resize($width = 0, $height = 0)
+	//----------------------------------------------------------------------------------------------------------
+	// 只根据宽度或者高度生成与原图比例一致的图片，若宽度高度同时指定，则与resize方法无异。
+	//----------------------------------------------------------------------------------------------------------
+	{
+		if ( ! $this->_check_image() || ($width == 0 AND $height == 0)) 
+		{
+			return $this;
+		}
+		if ($width != 0 AND $height != 0)
+		{
+			return $this->resize($width, $height);
+		}
+		$proportion = $this->width / $this->height;
+		if ($width == 0)
+		{
+			$tnh = $height;
+			$tnw = $height * $proportion;
+		}
+		else if ($height == 0)
+		{
+			$tnw = $width;
+			$tnh = $width / $proportion;
+		}
+		return $this->resize($tnw, $tnh);
 	}
 
 	public function resize($mw, $mh, $pad=FALSE)
